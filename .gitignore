@@ -1,0 +1,30 @@
+node_modules/
+dist/
+
+backend/node_modules/
+backend/dist/
+backend/bun.lock
+
+bun.lock
+package-lock.json
+yarn.lock
+.DS_Store
+.env
+
+# Next.js build output
+.next/
+out/
+
+# Production build
+build/
+
+# Environment variables
+.env*.local
+
+# Cache
+.npm
+.eslintcache
+.turbo
+
+# OS files
+Thumbs.db
