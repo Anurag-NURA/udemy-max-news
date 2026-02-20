@@ -1,7 +1,6 @@
 import NewsList from "@/components/news-list";
 
 export default async function NewsPage() {
-  setIsLoading(true);
   const response = await fetch("http://localhost:8080/news");
 
   if (!response.ok) {
