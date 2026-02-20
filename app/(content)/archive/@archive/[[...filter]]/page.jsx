@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import {
   getAvailableNewsYears,
@@ -9,24 +8,25 @@ import {
 } from "@/lib/news";
 import NewsList from "@/components/news-list";
 
-export default function FilteredNewsPage({ params }) {
+export default async function FilteredNewsPage({ params }) {
   const { filter } = params;
   console.log("filter:", filter);
 
-  const selectedYear = filter?.[0]; //continue only if filter exists, if it is defined get first element which is year
-  const selectedMonth = filter?.[1]; //continue only if filter exists, if it is defined get second element which is month
+  const selectedYear = filter?.[0]; //continue only if filter exists, if it is undefined get first element which is year
+  const selectedMonth = filter?.[1]; //continue only if filter exists, if it is undefined get second element which is month
+
   let news = undefined;
-  let links = getAvailableNewsYears(selectedYear);
+  let links = await getAvailableNewsYears(selectedYear);
 
   // if year is selected but month is not selected
   if (selectedYear && !selectedMonth) {
-    news = getNewsForYear(selectedYear);
+    news = await getNewsForYear(selectedYear);
     links = getAvailableNewsMonths(selectedYear);
   }
 
   //if month and year both are selected
   if (selectedYear && selectedMonth) {
-    news = getNewsForYearAndMonth(selectedYear, selectedMonth);
+    news = await getNewsForYearAndMonth(selectedYear, selectedMonth);
     links = []; // no further links to show when both year and month are selected
   }
 
@@ -36,13 +36,13 @@ export default function FilteredNewsPage({ params }) {
     newsContent = <NewsList news={news} />;
   }
 
+  const availableYears = await getAvailableNewsYears();
   // valid year and month check, eg: year=2022 and month=13 or month=abbbb(invalid month)
   // + sign converts string to number
   if (
-    (selectedYear &&
-      getAvailableNewsYears().includes(+selectedYear) === false) ||
+    (selectedYear && !availableYears.includes(selectedYear)) ||
     (selectedMonth &&
-      getAvailableNewsMonths(+selectedYear).includes(+selectedMonth) === false)
+      !getAvailableNewsMonths(selectedYear).includes(selectedMonth))
   ) {
     throw new Error("Invalid filter");
   }
